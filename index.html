@@ -38,7 +38,6 @@ body{
   min-height:100vh;
   padding:0 0 60px 0;
 }
-
 /* ─── HEADER ─── */
 .header{
   background:var(--card);
@@ -56,7 +55,6 @@ body{
   color:var(--accent);padding:3px 8px;border-radius:4px;
   letter-spacing:0.06em;text-transform:uppercase;
 }
-
 /* ─── LAYOUT ─── */
 .layout{display:grid;grid-template-columns:300px 1fr;gap:0;min-height:calc(100vh - 61px);}
 .sidebar{
@@ -68,7 +66,6 @@ body{
   overflow-y:auto;
 }
 .main{padding:24px 28px;overflow-x:hidden;}
-
 /* ─── SIDEBAR ─── */
 .sidebar-section{margin-bottom:24px;}
 .sidebar-label{
@@ -76,7 +73,6 @@ body{
   text-transform:uppercase;letter-spacing:0.1em;
   color:var(--text3);margin-bottom:10px;
 }
-
 /* Fee buttons */
 .fee-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
 .fee-btn{
@@ -106,7 +102,6 @@ body{
 }
 .fee-custom-input:focus{border-color:var(--accent);}
 .fee-custom-label{font-size:11px;color:var(--text3);}
-
 /* Sliders */
 .control{margin-bottom:14px;}
 .control label{
@@ -134,8 +129,7 @@ body{
 }
 .control input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2);}
 .control-hint{font-size:10px;color:var(--text3);margin-top:2px;}
-
-/* Base selector */
+/* Base + company selector */
 .base-select{
   width:100%;padding:7px 10px;border-radius:7px;
   border:0.5px solid var(--border2);
@@ -144,10 +138,22 @@ body{
   cursor:pointer;outline:none;
 }
 .base-select:focus{border-color:var(--accent);}
-
+.company-select{
+  width:100%;padding:8px 10px;border-radius:7px;
+  border:0.5px solid var(--accent2);
+  background:var(--blue-bg);color:var(--text);
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
+  cursor:pointer;outline:none;
+}
+.company-select:focus{border-color:var(--accent2);}
+.view-tag{
+  display:inline-block;margin-top:8px;font-size:10px;
+  font-family:'DM Mono',monospace;color:var(--accent2);
+  background:var(--blue-bg);border:0.5px solid var(--blue-border);
+  padding:3px 8px;border-radius:5px;
+}
 /* Divider */
 .divider{height:1px;background:var(--border);margin:20px 0;}
-
 /* Data info box */
 .data-info{
   background:var(--bg2);border-radius:8px;
@@ -155,14 +161,19 @@ body{
   color:var(--text3);line-height:1.6;
 }
 .data-info strong{color:var(--text2);}
-
 /* ─── MAIN AREA ─── */
 .section-title{
   font-size:10px;font-family:'DM Mono',monospace;
   text-transform:uppercase;letter-spacing:0.1em;
   color:var(--text3);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
 }
-
+.section-title .view-pill{
+  font-family:'DM Mono',monospace;color:var(--accent2);
+  background:var(--blue-bg);border:0.5px solid var(--blue-border);
+  padding:2px 7px;border-radius:5px;text-transform:none;letter-spacing:0;
+  font-size:10px;
+}
 /* KPI grid */
 .kpi-grid{
   display:grid;
@@ -177,12 +188,13 @@ body{
 }
 .kpi:hover{transform:translateY(-1px);box-shadow:var(--shadow2);}
 .kpi.highlight{background:var(--gold-bg);border-color:var(--gold-border);}
+.kpi.highlight-blue{background:var(--blue-bg);border-color:var(--blue-border);}
 .kpi-label{font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:6px;}
 .kpi-value{font-size:22px;font-weight:600;letter-spacing:-0.5px;color:var(--text);line-height:1;}
 .kpi.highlight .kpi-value{color:var(--accent);}
+.kpi.highlight-blue .kpi-value{color:var(--accent2);}
 .kpi-sub{font-size:11px;color:var(--text3);margin-top:4px;}
 .kpi-sub.up{color:var(--green);}
-
 /* Chart card */
 .chart-card{
   background:var(--card);border:0.5px solid var(--border);
@@ -191,7 +203,6 @@ body{
   margin-bottom:20px;
 }
 .chart-wrap{height:300px;position:relative;}
-
 /* Scenario table */
 .scenario-card{
   background:var(--card);border:0.5px solid var(--border);
@@ -222,7 +233,6 @@ table.scen tr.active-row td:first-child{color:var(--accent);font-weight:600;}
 table.scen tr.active-row .acum{color:var(--accent);font-weight:700;}
 table.scen tr:last-child td{border-bottom:none;}
 table.scen tr:hover td{background:var(--bg2);}
-
 /* Customer table */
 .cust-card{
   background:var(--card);border:0.5px solid var(--border);
@@ -267,21 +277,31 @@ table.cust td:first-child,table.cust td:nth-child(2){
   text-align:left;font-family:'DM Sans',sans-serif;font-size:12px;
 }
 table.cust td:nth-child(2){max-width:220px;overflow:hidden;text-overflow:ellipsis;}
-table.cust tr:hover td{background:var(--bg2);}
+table.cust tr:hover td{background:var(--bg2);cursor:pointer;}
 table.cust tr:last-child td{border-bottom:none;}
 .tfoot-row td{
   background:var(--bg3)!important;font-weight:600;
   color:var(--text)!important;font-family:'DM Mono',monospace;
 }
-.badge-check{
-  display:inline-block;width:8px;height:8px;border-radius:50%;
-  background:var(--green);
+/* Monthly table */
+table.month{border-collapse:collapse;width:100%;}
+table.month th{
+  padding:9px 14px;font-size:10px;font-family:'DM Mono',monospace;
+  font-weight:500;color:var(--text3);text-transform:uppercase;
+  letter-spacing:0.06em;background:var(--bg2);
+  border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;
 }
-.badge-watch{
-  display:inline-block;width:8px;height:8px;border-radius:50%;
-  background:var(--accent);
+table.month th:first-child{text-align:left;}
+table.month td{
+  padding:8px 14px;font-size:12px;font-family:'DM Mono',monospace;
+  border-bottom:0.5px solid var(--border);text-align:right;color:var(--text2);
+  white-space:nowrap;
 }
-
+table.month td:first-child{text-align:left;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--text);}
+table.month td.fee-col{color:var(--accent);font-weight:600;}
+table.month tr:hover td{background:var(--bg2);}
+.badge-check{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);}
+.badge-watch{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);}
 /* Insight card */
 .insight{
   background:var(--card);border:0.5px solid var(--border);
@@ -291,21 +311,10 @@ table.cust tr:last-child td{border-bottom:none;}
 .insight-title{font-size:11px;font-weight:600;color:var(--text);margin-bottom:6px;}
 .insight-body{font-size:12px;color:var(--text2);line-height:1.6;}
 .insight-body em{font-style:normal;font-weight:600;color:var(--text);}
-
-/* Alert banner */
-.alert-banner{
-  background:rgba(192,57,43,0.06);
-  border:0.5px solid rgba(192,57,43,0.2);
-  border-radius:8px;padding:10px 14px;
-  font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.5;
-}
-.alert-banner strong{color:var(--red);}
-
 /* Scrollbar */
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px;}
-
 /* Responsive */
 @media(max-width:900px){
   .layout{grid-template-columns:1fr;}
@@ -314,20 +323,24 @@ table.cust tr:last-child td{border-bottom:none;}
 </style>
 </head>
 <body>
-
 <div class="header">
   <div>
     <div class="header-title">API Sales — Forecast &amp; Fee Simulator</div>
     <div class="header-sub">Check &amp; Balance Sheet · Excluyendo Rosaprima, Jet Fresh, Mayesh, Kennicott, KBC Cooler · 2025–2028</div>
   </div>
-  <span class="header-tag">Standalone v1</span>
+  <span class="header-tag">Standalone v2</span>
 </div>
-
 <div class="layout">
-
   <!-- ══════ SIDEBAR ══════ -->
   <aside class="sidebar">
-
+    <div class="sidebar-section">
+      <div class="sidebar-label">Vista / Company</div>
+      <select class="company-select" id="company-selector" onchange="updateForecast()">
+        <option value="__ALL__">Todas las companies (consolidado)</option>
+      </select>
+      <span class="view-tag" id="view-tag">Vista: consolidado</span>
+    </div>
+    <div class="divider"></div>
     <div class="sidebar-section">
       <div class="sidebar-label">Tasa de fee a aplicar</div>
       <div class="fee-btns">
@@ -341,9 +354,7 @@ table.cust tr:last-child td{border-bottom:none;}
         <span class="fee-custom-label">% personalizado</span>
       </div>
     </div>
-
     <div class="divider"></div>
-
     <div class="sidebar-section">
       <div class="sidebar-label">Base del forecast</div>
       <select class="base-select" id="base-selector" onchange="updateForecast()">
@@ -352,12 +363,9 @@ table.cust tr:last-child td{border-bottom:none;}
         <option value="sheet_total">Sheet Total 2025+2026</option>
       </select>
     </div>
-
     <div class="divider"></div>
-
     <div class="sidebar-section">
       <div class="sidebar-label">Supuestos del modelo</div>
-
       <div class="control">
         <label>Crecimiento GMV 2026 <span class="val" id="v-g26">15%</span></label>
         <input type="range" id="fc-g26" min="-20" max="80" step="1" value="15"
@@ -389,38 +397,40 @@ table.cust tr:last-child td{border-bottom:none;}
         <div class="control-hint">% GMV cobrable perdido/año</div>
       </div>
     </div>
-
     <div class="divider"></div>
-
     <div class="data-info">
       <strong>Fuente:</strong> Check &amp; Balance Transaction Fees · Hojas API 2025–2026<br>
       <strong>Exclusiones:</strong> Rosaprima · Jet Fresh · Mayesh · Kennicott · KBC Cooler<br>
-      <strong>Generado:</strong> 2026-05-19
+      <strong>Generado:</strong> 2026-07-15
     </div>
   </aside>
-
   <!-- ══════ MAIN ══════ -->
   <main class="main">
-
-
-
     <!-- KPIs -->
-    <div class="section-title">Proyección de revenue por fee</div>
+    <div class="section-title">Proyección de revenue por fee <span class="view-pill" id="pill-kpi">Consolidado</span></div>
     <div class="kpi-grid" id="kpi-grid"></div>
 
+    <!-- Monthly 12-month forecast -->
+    <div class="section-title">Forecast mensual — próximos 12 meses <span class="view-pill" id="pill-month">Consolidado</span></div>
+    <div class="chart-card">
+      <div class="chart-wrap"><canvas id="monthChart"></canvas></div>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-header" id="month-header">Detalle mensual · fee proyectado</div>
+      <div id="month-table" style="overflow-x:auto;"></div>
+    </div>
+
     <!-- GMV Chart -->
-    <div class="section-title">GMV histórico + proyectado vs fee revenue</div>
+    <div class="section-title">GMV histórico + proyectado vs fee revenue (anual)</div>
     <div class="chart-card">
       <div class="chart-wrap"><canvas id="fcChart"></canvas></div>
     </div>
-
     <!-- Scenario table -->
     <div class="section-title">Tabla de escenarios de fee</div>
     <div class="scenario-card">
       <div class="scenario-header">Comparación multitasa · * = tasa seleccionada actualmente</div>
       <div id="scen-table"></div>
     </div>
-
     <!-- Customer table -->
     <div class="section-title">Resumen de customers (base: Check &amp; Balance)</div>
     <div class="cust-card">
@@ -435,12 +445,11 @@ table.cust tr:last-child td{border-bottom:none;}
       </div>
       <div id="cust-table-wrap" style="overflow-x:auto;"></div>
     </div>
-
-
-
+    <!-- Conclusions -->
+    <div class="section-title">Conclusiones</div>
+    <div id="conclusions"></div>
   </main>
 </div>
-
 <script>
 // ══════════════════════════════════════════════
 // DATA — Check & Balance Sheet (API channel)
@@ -484,11 +493,12 @@ var CUSTOMERS = [
     subs: 'DBEC Wholesale Florist',
     v2025: 0, v2026: 30.60 },
 ];
-
 // Annualize 2026 YTD (5 months Jan-May → ×12/5 = 2.4)
 var MONTHS_2026 = 5;
 var ANNUALIZE = 12 / MONTHS_2026;
-
+// Forecast start = próximo mes desde hoy (2026-07-15) → agosto 2026
+var FC_START = new Date(2026, 7, 1); // month index 7 = agosto
+var MONTHS_ES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 // ── Helpers ──────────────────────────────────
 function fmtM(v){
   if(Math.abs(v)>=1000000) return '$'+(v/1000000).toFixed(2)+'M';
@@ -508,7 +518,6 @@ function updateSliderBg(el){
   var p=((val-min)/(max-min)*100).toFixed(1)+'%';
   el.style.setProperty('--pct',p);
 }
-
 function setFee(v){
   document.getElementById('fc-fee').value=v;
   document.querySelectorAll('.fee-btn').forEach(function(b){
@@ -522,20 +531,56 @@ function syncFeeInput(v){
   });
   updateForecast();
 }
-
+// ── Company selector ──────────────────────────
+function populateCompanySelector(){
+  var sel=document.getElementById('company-selector');
+  CUSTOMERS.slice().sort(function(a,b){return (b.v2025+b.v2026)-(a.v2025+a.v2026);})
+    .forEach(function(c){
+      var o=document.createElement('option');
+      o.value=c.name; o.textContent=c.name;
+      sel.appendChild(o);
+    });
+}
+function getSelectedCustomers(){
+  var v=document.getElementById('company-selector').value;
+  if(v==='__ALL__') return CUSTOMERS;
+  return CUSTOMERS.filter(function(c){return c.name===v;});
+}
+function isConsolidated(){ return document.getElementById('company-selector').value==='__ALL__'; }
+function viewLabel(){ return isConsolidated()?'Consolidado':document.getElementById('company-selector').value; }
 // ── Base GMV selector ──────────────────────────
-function getBaseGMV(){
+function getBaseGMV(set){
   var sel=document.getElementById('base-selector').value;
-  var tot25=CUSTOMERS.reduce(function(s,c){return s+c.v2025;},0);
-  var tot26=CUSTOMERS.reduce(function(s,c){return s+c.v2026;},0);
+  var tot25=set.reduce(function(s,c){return s+c.v2025;},0);
+  var tot26=set.reduce(function(s,c){return s+c.v2026;},0);
   var tot=tot25+tot26;
   if(sel==='sheet_2025') return {gmv:tot25,label:'Sheet 2025 (año completo)',rr:tot25};
   if(sel==='sheet_total') return {gmv:tot,label:'Sheet total 2025+2026',rr:tot};
-  // default: 2026 YTD annualized
   var ann=tot26*ANNUALIZE;
   return {gmv:tot26,label:'Sheet 2026 YTD (anualizado)',rr:ann};
 }
-
+// ── Monthly 12-month forecast ─────────────────
+// Devuelve array de 12 meses con {label,date,gmv,cobrable,fee}
+function buildMonthly(rr, g26, g27, g28, ar, cr, fp){
+  var months=[];
+  var gmvM = rr/12;              // GMV mensual base (run-rate anualizado /12)
+  var churnAnnual = 1-cr/100;
+  for(var i=0;i<12;i++){
+    var d=new Date(FC_START.getFullYear(), FC_START.getMonth()+i, 1);
+    var y=d.getFullYear();
+    var g = (y>=2028)?g28 : (y>=2027)?g27 : g26;
+    var mGrow = Math.pow(1+g/100, 1/12)-1;
+    var mChurn = Math.pow(churnAnnual, 1/12);
+    gmvM = gmvM * (1+mGrow) * mChurn;
+    var cob = gmvM * ar/100;
+    var fee = cob * fp/100;
+    months.push({
+      label: MONTHS_ES[d.getMonth()]+' '+String(y).slice(2),
+      date: d, gmv: gmvM, cobrable: cob, fee: fee, g: g
+    });
+  }
+  return months;
+}
 // ── Main update ───────────────────────────────
 function updateForecast(){
   var fp=parseFloat(document.getElementById('fc-fee').value)||2.5;
@@ -544,49 +589,101 @@ function updateForecast(){
   var g28=parseFloat(document.getElementById('fc-g28').value)||18;
   var ar =parseFloat(document.getElementById('fc-adopt').value)||80;
   var cr =parseFloat(document.getElementById('fc-churn').value)||5;
-
-  var base=getBaseGMV();
-  var rr=base.rr; // annualized run-rate
-
-  var tot25=CUSTOMERS.reduce(function(s,c){return s+c.v2025;},0);
-  var tot26yt=CUSTOMERS.reduce(function(s,c){return s+c.v2026;},0);
-
-  // Projected GMV
+  var set=getSelectedCustomers();
+  var base=getBaseGMV(set);
+  var rr=base.rr;
+  var tot25=set.reduce(function(s,c){return s+c.v2025;},0);
+  var tot26yt=set.reduce(function(s,c){return s+c.v2026;},0);
+  // View labels
+  var vl=viewLabel();
+  document.getElementById('view-tag').textContent='Vista: '+(isConsolidated()?'consolidado':vl);
+  document.getElementById('pill-kpi').textContent=vl;
+  document.getElementById('pill-month').textContent=vl;
+  // Projected annual GMV
   var gmv26=rr*(1+g26/100);
   var gmv27=gmv26*(1+g27/100);
   var gmv28=gmv27*(1+g28/100);
-
-  // Churn factor
   var cf=1-cr/100;
-
-  // Cobrable (adoption) & fee
   var cob25=tot25*ar/100;
   var cob26=gmv26*ar/100*cf;
   var cob27=gmv27*ar/100*cf;
   var cob28=gmv28*ar/100*cf;
-
-  var f25=cob25*fp/100;
-  var f26=cob26*fp/100;
-  var f27=cob27*fp/100;
-  var f28=cob28*fp/100;
+  var f25=cob25*fp/100, f26=cob26*fp/100, f27=cob27*fp/100, f28=cob28*fp/100;
   var acum=f26+f27+f28;
-
+  // Monthly forecast
+  var months=buildMonthly(rr,g26,g27,g28,ar,cr,fp);
+  var fee12=months.reduce(function(s,m){return s+m.fee;},0);
+  var feeAvg=fee12/12;
   // ── KPIs ──
   var kpiData=[
+    {label:'Fee próx. 12 meses',value:fmtK(fee12),sub:months[0].label+' → '+months[11].label,cls:'',hlb:true},
+    {label:'Fee mensual prom.',value:fmtK(feeAvg),sub:'run-rate '+viewLabel().split('/')[0].trim(),cls:''},
     {label:'Fee 2025 (base)',value:fmtK(f25),sub:'GMV cobrable '+fmtM(cob25),cls:''},
     {label:'Fee 2026 proy.',value:fmtK(f26),sub:'GMV proy. '+fmtM(gmv26),cls:'up'},
     {label:'Fee 2027 proy.',value:fmtK(f27),sub:'GMV proy. '+fmtM(gmv27),cls:'up'},
-    {label:'Fee 2028 proy.',value:fmtK(f28),sub:'GMV proy. '+fmtM(gmv28),cls:'up'},
     {label:'Revenue acum. 3 años',value:fmtK(acum),sub:'2026–2028',cls:'',hl:true},
-    {label:'Run-rate mensual 2027',value:fmtK(f27/12),sub:'ingreso por fee',cls:''},
   ];
   var kg=document.getElementById('kpi-grid');
   kg.innerHTML='';
   kpiData.forEach(function(k){
-    kg.innerHTML+='<div class="kpi'+(k.hl?' highlight':'')+'"><div class="kpi-label">'+k.label+'</div><div class="kpi-value">'+k.value+'</div><div class="kpi-sub '+k.cls+'">'+k.sub+'</div></div>';
+    var cls='kpi'+(k.hl?' highlight':'')+(k.hlb?' highlight-blue':'');
+    kg.innerHTML+='<div class="'+cls+'"><div class="kpi-label">'+k.label+'</div><div class="kpi-value">'+k.value+'</div><div class="kpi-sub '+k.cls+'">'+k.sub+'</div></div>';
   });
-
-  // ── Chart ──
+  // ── Monthly chart ──
+  if(window._monthChart) window._monthChart.destroy();
+  var mctx=document.getElementById('monthChart').getContext('2d');
+  window._monthChart=new Chart(mctx,{
+    type:'bar',
+    data:{
+      labels:months.map(function(m){return m.label;}),
+      datasets:[
+        {label:'GMV cobrable mensual',
+         data:months.map(function(m){return m.cobrable;}),
+         backgroundColor:'rgba(43,95,165,0.18)',borderColor:'rgba(43,95,165,0.5)',
+         borderWidth:1,borderRadius:4,yAxisID:'y',order:2},
+        {label:'Fee mensual ('+fp+'%)',
+         data:months.map(function(m){return m.fee;}),
+         type:'line',borderColor:'#B07D2E',backgroundColor:'rgba(176,125,46,0.12)',
+         fill:true,tension:0.35,pointRadius:4,pointBackgroundColor:'#B07D2E',
+         pointBorderColor:'#FDFCFA',pointBorderWidth:2,yAxisID:'y2',order:1}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{color:'#6B6860',font:{size:11,family:'DM Sans'}},position:'bottom'},
+        tooltip:{callbacks:{label:function(c){return ' '+c.dataset.label+': '+fmtK(c.raw||0);}}}
+      },
+      scales:{
+        y:{ticks:{color:'#A5A39C',callback:function(v){return fmtK(v);}},grid:{color:'rgba(0,0,0,0.04)'}},
+        y2:{position:'right',ticks:{color:'#B07D2E',callback:function(v){return fmtK(v);}},grid:{display:false}},
+        x:{ticks:{color:'#6B6860',font:{size:10}},grid:{display:false}}
+      }
+    }
+  });
+  // ── Monthly table ──
+  document.getElementById('month-header').textContent=
+    'Detalle mensual · '+vl+' · fee '+fp+'% · adopción '+ar+'% · total 12 m: '+fmtK(fee12);
+  var mh='<table class="month"><thead><tr>'
+    +'<th>Mes</th><th>GMV proyectado</th><th>GMV cobrable</th><th>Fee ('+fp+'%)</th><th>Fee acum.</th>'
+    +'</tr></thead><tbody>';
+  var acumM=0;
+  months.forEach(function(m){
+    acumM+=m.fee;
+    mh+='<tr><td>'+m.label+'</td>'
+      +'<td>'+fmtFull(m.gmv)+'</td>'
+      +'<td>'+fmtFull(m.cobrable)+'</td>'
+      +'<td class="fee-col">'+fmtFull(m.fee)+'</td>'
+      +'<td>'+fmtFull(acumM)+'</td></tr>';
+  });
+  mh+='</tbody><tfoot><tr class="tfoot-row">'
+    +'<td>TOTAL 12 meses</td>'
+    +'<td>'+fmtFull(months.reduce(function(s,m){return s+m.gmv;},0))+'</td>'
+    +'<td>'+fmtFull(months.reduce(function(s,m){return s+m.cobrable;},0))+'</td>'
+    +'<td>'+fmtFull(fee12)+'</td>'
+    +'<td>'+fmtFull(fee12)+'</td></tr></tfoot></table>';
+  document.getElementById('month-table').innerHTML=mh;
+  // ── Annual chart ──
   if(window._fcChart) window._fcChart.destroy();
   var ctx=document.getElementById('fcChart').getContext('2d');
   window._fcChart=new Chart(ctx,{
@@ -601,14 +698,14 @@ function updateForecast(){
         {label:'GMV proyectado',
          data:[null,null,gmv26,gmv27,gmv28],
          backgroundColor:'rgba(43,95,165,0.12)',borderColor:'rgba(43,95,165,0.45)',
-         borderWidth:1,borderRadius:4,borderDash:[4,4],yAxisID:'y'},
+         borderWidth:1,borderRadius:4,yAxisID:'y'},
         {label:'Fee revenue ('+fp+'%)',
          data:[f25,null,f26,f27,f28],
          type:'line',borderColor:'#B07D2E',
          backgroundColor:'rgba(176,125,46,0.1)',
          fill:true,tension:0.35,
          pointRadius:6,pointBackgroundColor:'#B07D2E',
-         pointBorderColor:'var(--card)',pointBorderWidth:2,
+         pointBorderColor:'#FDFCFA',pointBorderWidth:2,
          yAxisID:'y2'}
       ]
     },
@@ -622,13 +719,12 @@ function updateForecast(){
         y:{ticks:{color:'#A5A39C',callback:function(v){return fmtK(v);}},
            grid:{color:'rgba(0,0,0,0.04)'}},
         y2:{position:'right',
-            ticks:{color:'var(--accent)',callback:function(v){return fmtK(v);}},
+            ticks:{color:'#B07D2E',callback:function(v){return fmtK(v);}},
             grid:{display:false}},
         x:{ticks:{color:'#6B6860'},grid:{display:false}}
       }
     }
   });
-
   // ── Scenario table ──
   var rates=[1.5,2.0,fp,2.5,3.0].filter(function(v,i,a){return a.indexOf(v)===i;}).sort(function(a,b){return a-b;});
   var th='<table class="scen"><thead><tr>'
@@ -647,52 +743,45 @@ function updateForecast(){
   });
   th+='</tbody></table>';
   document.getElementById('scen-table').innerHTML=th;
-
   // ── Conclusions ──
   var yoy=tot25>0?((tot26yt*ANNUALIZE-tot25)/tot25*100).toFixed(1):null;
   var _concEl=document.getElementById('conclusions'); if(_concEl) _concEl.innerHTML=
-    '<div class="insight"><div class="insight-title">Resumen ejecutivo</div>'
+    '<div class="insight"><div class="insight-title">Resumen ejecutivo — '+vl+'</div>'
     +'<div class="insight-body">Base: <em>'+base.label+'</em>. Con fee del <em>'+fp+'%</em> y adopción del <em>'+ar+'%</em>, '
-    +'el GMV cobrable 2025 fue <em>'+fmtM(cob25)+'</em>, generando <em>'+fmtK(f25)+'</em> en fees. '
-    +'El run-rate anualizado 2026 proyecta un GMV de <em>'+fmtM(gmv26)+'</em> (con '+pct(g26)+' de crecimiento). '
-    +'Fee mensual estimado 2026: <em>'+fmtK(f26/12)+'</em>. Revenue acumulado 2026–2028: <em>'+fmtK(acum)+'</em>.</div></div>'
+    +'el fee proyectado para los <em>próximos 12 meses</em> ('+months[0].label+' → '+months[11].label+') es <em>'+fmtK(fee12)+'</em> '
+    +'(promedio <em>'+fmtK(feeAvg)+'</em>/mes). '
+    +'GMV cobrable 2025: <em>'+fmtM(cob25)+'</em> → fees <em>'+fmtK(f25)+'</em>. '
+    +'Revenue acumulado 2026–2028: <em>'+fmtK(acum)+'</em>.</div></div>'
     +'<div class="insight"><div class="insight-title">Supuestos aplicados</div>'
     +'<div class="insight-body">Adopción = % del GMV donde aplica el fee. Churn = '+cr+'% anual de GMV cobrable perdido. '
     +'Crecimientos: 2026 → '+pct(g26)+', 2027 → '+pct(g27)+', 2028 → '+pct(g28)+'. '
     +(yoy?'YoY anualizado 2025→2026: <em>'+pct(parseFloat(yoy))+'</em>. ':'')
-    +'Los valores 2026 YTD cubren ene–may 2026 ('+MONTHS_2026+' meses) y se anualizan ×2.4 para comparación.</div></div>';
+    +'El forecast mensual arranca en <em>'+months[0].label+'</em> desde el run-rate anualizado 2026 (/12) y compone crecimiento y churn mes a mes. '
+    +'Los valores 2026 YTD cubren ene–may 2026 ('+MONTHS_2026+' meses) y se anualizan ×2.4.</div></div>';
+  // refresh customer table with current fee/adoption + view
+  renderCustTable(document.getElementById('cust-search').value||'');
 }
-
 // ── Customer table ────────────────────────────
 function renderCustTable(q){
   var fp=parseFloat(document.getElementById('fc-fee').value)||2.5;
   var ar=parseFloat(document.getElementById('fc-adopt').value)||80;
   var qLow=(q||'').toLowerCase().trim();
-  var rows=CUSTOMERS.filter(function(c){
+  var scope=getSelectedCustomers();
+  var rows=scope.filter(function(c){
     return !qLow||c.name.toLowerCase().indexOf(qLow)>=0||c.subs.toLowerCase().indexOf(qLow)>=0;
   });
   rows.sort(function(a,b){return (b.v2026||0)-(a.v2026||0);});
-
-  document.getElementById('cust-count-label').textContent=rows.length+' customers consolidados'+(qLow?' · filtro: "'+q+'"':'');
-
+  document.getElementById('cust-count-label').textContent=
+    rows.length+' customer'+(rows.length===1?'':'s')+(isConsolidated()?' consolidados':' (vista individual)')+(qLow?' · filtro: "'+q+'"':'');
   var totV25=rows.reduce(function(s,c){return s+c.v2025;},0);
   var totV26=rows.reduce(function(s,c){return s+c.v2026;},0);
-  var totFee25=totV25*ar/100*fp/100;
-  var totFee26=totV26*ar/100*fp/100;
-
   var html='<table class="cust"><thead><tr>'
     +'<th>#</th><th>Customer (normalizado)</th>'
     +'<th>2025 Sheet</th><th>2026 YTD Sheet</th><th>Total Sheet</th>'
     +'</tr></thead><tbody>';
   rows.forEach(function(c,i){
     var total=c.v2025+c.v2026;
-    var fee25=c.v2025*ar/100*fp/100;
-    var fee26=c.v2026*ar/100*fp/100;
-    var ann26=c.v2026*ANNUALIZE;
-    var yoy=c.v2025>0?((ann26-c.v2025)/c.v2025*100).toFixed(1):null;
-    var yoyColor=parseFloat(yoy)>=0?'var(--green)':'var(--red)';
-    var yoyHtml=yoy?('<span style="color:'+yoyColor+';">'+(parseFloat(yoy)>=0?'+':'')+yoy+'%</span>'):'<span style="color:var(--text3)">—</span>';
-    html+='<tr>'
+    html+='<tr onclick="selectCompanyByName(\''+c.name.replace(/'/g,"\\'")+'\')">'
       +'<td style="color:var(--text3);font-size:11px;">'+(i+1)+'</td>'
       +'<td><div style="font-weight:500;font-size:12px;font-family:DM Sans,sans-serif;">'+c.name+'</div>'
       +'<div style="font-size:10px;color:var(--text3);white-space:normal;line-height:1.4;max-width:280px;margin-top:2px;">'+c.subs+'</div></td>'
@@ -709,22 +798,17 @@ function renderCustTable(q){
     +'</tr></tfoot></table>';
   document.getElementById('cust-table-wrap').innerHTML=html;
 }
-
+function selectCompanyByName(name){
+  document.getElementById('company-selector').value=name;
+  updateForecast();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 // ── Init ──────────────────────────────────────
 document.addEventListener('DOMContentLoaded',function(){
-  // Init sliders bg
+  populateCompanySelector();
   document.querySelectorAll('.control input[type=range]').forEach(function(el){
     updateSliderBg(el);
   });
-  updateForecast();
-  renderCustTable('');
-  // Update customer table when fee/adoption changes
-  var orig=updateForecast;
-  updateForecast=function(){
-    orig();
-    renderCustTable(document.getElementById('cust-search').value||'');
-  };
-  // trigger again to apply wrapped version
   updateForecast();
 });
 </script>
