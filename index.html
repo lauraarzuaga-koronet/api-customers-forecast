@@ -102,6 +102,13 @@ body{
 }
 .fee-custom-input:focus{border-color:var(--accent);}
 .fee-custom-label{font-size:11px;color:var(--text3);}
+/* Active-fee toggle */
+.af-toggle{display:flex;gap:6px;margin-bottom:14px;}
+.af-btn{font-size:12px;font-weight:500;font-family:'DM Mono',monospace;padding:7px 16px;border-radius:7px;border:0.5px solid var(--border2);background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .13s;}
+.af-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+.af-btn.active{background:var(--blue-bg);border-color:var(--accent2);color:var(--accent2);font-weight:600;}
+.hist-badge{font-size:9px;font-family:'DM Mono',monospace;color:var(--green);background:rgba(46,125,79,0.08);border:0.5px solid rgba(46,125,79,0.25);padding:1px 6px;border-radius:4px;margin-left:6px;}
+.proj-badge{font-size:9px;font-family:'DM Mono',monospace;color:var(--accent);background:var(--gold-bg);border:0.5px solid var(--gold-border);padding:1px 6px;border-radius:4px;margin-left:6px;}
 /* Sliders */
 .control{margin-bottom:14px;}
 .control label{
@@ -418,6 +425,20 @@ table.month tr:hover td{background:var(--bg2);}
     <div class="scenario-card">
       <div class="scenario-header" id="month-header">Detalle mensual · fee proyectado</div>
       <div id="month-table" style="overflow-x:auto;"></div>
+    </div>
+
+    <!-- Active-fee company analysis -->
+    <div class="section-title">Companies con fee activo — Bloomnet &amp; iBuyFlowers <span class="view-pill">C-1156 · C-1290 · real vs @3.5%</span></div>
+    <div class="af-toggle">
+      <button class="af-btn active" onclick="setAfView('BOTH')">Ambas</button>
+      <button class="af-btn" onclick="setAfView('C-1156')">Bloomnet</button>
+      <button class="af-btn" onclick="setAfView('C-1290')">iBuyFlowers</button>
+    </div>
+    <div class="kpi-grid" id="af-kpi"></div>
+    <div class="chart-card"><div class="chart-wrap"><canvas id="afChart"></canvas></div></div>
+    <div class="scenario-card">
+      <div class="scenario-header" id="af-header">Detalle mensual · fee real 6m + proyección @3.5% (12m)</div>
+      <div id="af-table" style="overflow-x:auto;"></div>
     </div>
 
     <!-- GMV Chart -->
@@ -760,6 +781,139 @@ function updateForecast(){
     +'Los valores 2026 YTD cubren ene–may 2026 ('+MONTHS_2026+' meses) y se anualizan ×2.4.</div></div>';
   // refresh customer table with current fee/adoption + view
   renderCustTable(document.getElementById('cust-search').value||'');
+  // refresh active-fee analysis (reacts to growth/churn sliders)
+  renderActiveFee();
+}
+// ══════════════════════════════════════════════
+// ACTIVE-FEE ANALYSIS — Bloomnet (C-1156) & iBuyFlowers (C-1290)
+// Fees reales pagados (production.analytics.transaction_fees, ene–jun 2026, ks_flag=TRUE)
+// ══════════════════════════════════════════════
+var ACTIVE_FEE = [
+  { id:'C-1156', name:'Bloomnet', color:'#2B5FA5',
+    hist:[
+      {m:'ene 26',gmv:189200.91,paid:2840.76},
+      {m:'feb 26',gmv:397436.17,paid:5965.22},
+      {m:'mar 26',gmv:229656.59,paid:3447.67},
+      {m:'abr 26',gmv:250879.98,paid:3765.89},
+      {m:'may 26',gmv:283792.38,paid:4259.73},
+      {m:'jun 26',gmv:196185.32,paid:2944.74}
+    ]},
+  { id:'C-1290', name:'iBuyFlowers', color:'#B07D2E',
+    hist:[
+      {m:'ene 26',gmv:4270.24,paid:64.06},
+      {m:'feb 26',gmv:10930.43,paid:164.11},
+      {m:'mar 26',gmv:10449.30,paid:156.95},
+      {m:'abr 26',gmv:18015.03,paid:270.37},
+      {m:'may 26',gmv:31167.27,paid:467.71},
+      {m:'jun 26',gmv:24392.48,paid:366.30}
+    ]},
+];
+var NEW_FEE_RATE = 3.5;
+var AF_VIEW = 'BOTH';
+function setAfView(v){
+  AF_VIEW=v;
+  var btns=document.querySelectorAll('.af-btn');
+  btns.forEach(function(b){b.classList.remove('active');});
+  var idx=v==='BOTH'?0:(v==='C-1156'?1:2);
+  if(btns[idx]) btns[idx].classList.add('active');
+  renderActiveFee();
+}
+// Proyección partiendo del FEE PAGADO real reescalado de la tasa actual a 3.5%,
+// y creciendo mes a mes con los supuestos del panel.
+function afProject(monthlyFeeBase,g26,g27,g28,cr){
+  var arr=[],feeM=monthlyFeeBase,ch=1-cr/100;
+  for(var i=0;i<12;i++){
+    var d=new Date(FC_START.getFullYear(),FC_START.getMonth()+i,1),y=d.getFullYear();
+    var g=(y>=2028)?g28:(y>=2027)?g27:g26;
+    feeM=feeM*(1+(Math.pow(1+g/100,1/12)-1))*Math.pow(ch,1/12);
+    arr.push({label:MONTHS_ES[d.getMonth()]+' '+String(y).slice(2),fee:feeM,gmv:feeM/(NEW_FEE_RATE/100)});
+  }
+  return arr;
+}
+function afStats(c,g26,g27,g28,cr){
+  var hp=c.hist.reduce(function(s,h){return s+h.paid;},0);   // fee_amount real pagado
+  var hg=c.hist.reduce(function(s,h){return s+h.gmv;},0);
+  var rate=hg>0?hp/hg*100:0;                                  // fee_rate efectivo real
+  var avgPaid=hp/c.hist.length;                               // run-rate mensual del fee pagado
+  var baseFee35=rate>0?avgPaid*(NEW_FEE_RATE/rate):0;         // mismo fee reescalado a 3.5%
+  var proj=afProject(baseFee35,g26,g27,g28,cr);
+  return {c:c,histPaid:hp,histGmv:hg,rate:rate,histAt35:rate>0?hp*(NEW_FEE_RATE/rate):0,
+          avgPaid:avgPaid,proj:proj,proj12:proj.reduce(function(s,m){return s+m.fee;},0)};
+}
+function renderActiveFee(){
+  var g26=parseFloat(document.getElementById('fc-g26').value)||15;
+  var g27=parseFloat(document.getElementById('fc-g27').value)||20;
+  var g28=parseFloat(document.getElementById('fc-g28').value)||18;
+  var cr =parseFloat(document.getElementById('fc-churn').value)||5;
+  var stats=ACTIVE_FEE.map(function(c){return afStats(c,g26,g27,g28,cr);});
+  var sel=AF_VIEW==='BOTH'?stats:stats.filter(function(s){return s.c.id===AF_VIEW;});
+  var histPaid=sel.reduce(function(s,x){return s+x.histPaid;},0);
+  var histGmv =sel.reduce(function(s,x){return s+x.histGmv;},0);
+  var histAt35=sel.reduce(function(s,x){return s+x.histAt35;},0);
+  var proj12  =sel.reduce(function(s,x){return s+x.proj12;},0);
+  var avgRate =histGmv>0?histPaid/histGmv*100:0;
+  var uplift  =histPaid>0?histAt35/histPaid:0;
+  var viewName=AF_VIEW==='BOTH'?'Bloomnet + iBuyFlowers':sel[0].c.name;
+  // KPIs
+  var kp=[
+    {label:'Pagado últimos 6m (real)',value:fmtK(histPaid),sub:'tasa actual ~'+avgRate.toFixed(2)+'%',cls:''},
+    {label:'Equivalente 6m @3.5%',value:fmtK(histAt35),sub:'misma GMV, +'+fmtK(histAt35-histPaid),cls:'up',hlb:true},
+    {label:'Proyección 12m @3.5%',value:fmtK(proj12),sub:viewName,cls:'',hl:true},
+    {label:'Uplift vs tasa actual',value:'×'+uplift.toFixed(2),sub:'1.5% → 3.5%',cls:'up'},
+  ];
+  var kg=document.getElementById('af-kpi');kg.innerHTML='';
+  kp.forEach(function(k){var cls='kpi'+(k.hl?' highlight':'')+(k.hlb?' highlight-blue':'');
+    kg.innerHTML+='<div class="'+cls+'"><div class="kpi-label">'+k.label+'</div><div class="kpi-value">'+k.value+'</div><div class="kpi-sub '+k.cls+'">'+k.sub+'</div></div>';});
+  // Chart: hist (6m real paid) + proj (12m @3.5%)
+  var histLabels=ACTIVE_FEE[0].hist.map(function(h){return h.m;});
+  var projLabels=sel[0].proj.map(function(m){return m.label;});
+  var labels=histLabels.concat(projLabels);
+  var datasets=[];
+  sel.forEach(function(s){
+    datasets.push({label:s.c.name+' — pagado real',
+      data:s.c.hist.map(function(h){return h.paid;}).concat(projLabels.map(function(){return null;})),
+      backgroundColor:s.c.id==='C-1156'?'rgba(43,95,165,0.38)':'rgba(176,125,46,0.38)',
+      borderColor:s.c.color,borderWidth:1,borderRadius:4,stack:'real',type:'bar'});
+    datasets.push({label:s.c.name+' — proy @3.5%',
+      data:histLabels.map(function(){return null;}).concat(s.proj.map(function(m){return m.fee;})),
+      borderColor:s.c.color,backgroundColor:'transparent',type:'line',tension:0.35,
+      borderDash:[5,3],pointRadius:3,pointBackgroundColor:s.c.color,borderWidth:2});
+  });
+  if(window._afChart)window._afChart.destroy();
+  window._afChart=new Chart(document.getElementById('afChart').getContext('2d'),{
+    type:'bar',data:{labels:labels,datasets:datasets},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#6B6860',font:{size:10,family:'DM Sans'}},position:'bottom'},
+        tooltip:{callbacks:{label:function(c){return ' '+c.dataset.label+': '+fmtK(c.raw||0);}}}},
+      scales:{y:{ticks:{color:'#A5A39C',callback:function(v){return fmtK(v);}},grid:{color:'rgba(0,0,0,0.04)'}},
+        x:{ticks:{color:'#6B6860',font:{size:9}},grid:{display:false}}}}
+  });
+  // Table
+  document.getElementById('af-header').innerHTML=
+    'Detalle mensual · '+viewName+' · fee real 6m (~'+avgRate.toFixed(2)+'%) + proyección @3.5% (12m)';
+  var th='<table class="month"><thead><tr><th>Mes</th><th>GMV</th><th>Tasa real</th><th>Fee real (pagado)</th><th>Fee @3.5%</th></tr></thead><tbody>';
+  ACTIVE_FEE[0].hist.forEach(function(_,i){
+    var gmvSum=sel.reduce(function(s,x){return s+x.c.hist[i].gmv;},0);
+    var paidSum=sel.reduce(function(s,x){return s+x.c.hist[i].paid;},0);
+    var rSum=gmvSum>0?paidSum/gmvSum*100:0;
+    th+='<tr><td>'+ACTIVE_FEE[0].hist[i].m+' <span class="hist-badge">real</span></td>'
+      +'<td>'+fmtFull(gmvSum)+'</td><td>'+rSum.toFixed(2)+'%</td><td>'+fmtFull(paidSum)+'</td>'
+      +'<td class="fee-col">'+fmtFull(paidSum*(NEW_FEE_RATE/(rSum||NEW_FEE_RATE)))+'</td></tr>';
+  });
+  th+='<tr class="tfoot-row"><td>Subtotal 6m real</td><td>'+fmtFull(histGmv)+'</td>'
+    +'<td>'+avgRate.toFixed(2)+'%</td><td>'+fmtFull(histPaid)+'</td><td>'+fmtFull(histAt35)+'</td></tr>';
+  sel[0].proj.forEach(function(_,i){
+    var gmvSum=sel.reduce(function(s,x){return s+x.proj[i].gmv;},0);
+    var feeSum=sel.reduce(function(s,x){return s+x.proj[i].fee;},0);
+    th+='<tr><td>'+sel[0].proj[i].label+' <span class="proj-badge">proy</span></td>'
+      +'<td>'+fmtFull(gmvSum)+'</td><td>3.50%</td><td style="color:var(--text3)">—</td>'
+      +'<td class="fee-col">'+fmtFull(feeSum)+'</td></tr>';
+  });
+  var projGmvTot=sel.reduce(function(a,x){return a+x.proj.reduce(function(s,m){return s+m.gmv;},0);},0);
+  th+='<tr class="tfoot-row"><td>Total 12m proy @3.5%</td><td>'+fmtFull(projGmvTot)+'</td>'
+    +'<td>3.50%</td><td style="color:var(--text3)">—</td><td>'+fmtFull(proj12)+'</td></tr>';
+  th+='</tbody></table>';
+  document.getElementById('af-table').innerHTML=th;
 }
 // ── Customer table ────────────────────────────
 function renderCustTable(q){
